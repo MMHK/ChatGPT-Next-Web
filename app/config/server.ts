@@ -158,6 +158,25 @@ export const getServerSideConfig = () => {
     process.env.WHITE_WEBDAV_ENDPOINTS ?? ""
   ).split(",");
 
+  let defaultPlugins = process.env.DEFAULT_PLUGINS || "";
+  let plugins = {};
+  if (defaultPlugins) {
+    plugins = Object.fromEntries<string>(defaultPlugins.split(",")
+        .filter((row) => {
+          return row.trim().length > 0 && row.trim().includes("=");
+        })
+        .map((row) => {
+          let [pluginID, pluginEnvName] = row.trim().split("=");
+          let pluginYML = '';
+          try {
+            pluginYML = process.env[`PLUGIN_${pluginEnvName}`] || "";
+          } catch (e) {
+            console.error(`[Server Config] failed to load plugin ${pluginEnvName}`);
+          }
+          return [pluginID, pluginYML];
+        }));
+  }
+
   return {
     baseUrl: process.env.BASE_URL,
     apiKey: getApiKey(process.env.OPENAI_API_KEY),
@@ -230,5 +249,7 @@ export const getServerSideConfig = () => {
     customModels,
     defaultModel,
     allowedWebDavEndpoints,
+
+    defaultPlugins: plugins,
   };
 };

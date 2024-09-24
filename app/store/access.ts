@@ -120,6 +120,7 @@ const DEFAULT_ACCESS_STATE = {
   disableFastLink: false,
   customModels: "",
   defaultModel: "",
+  defaultPlugins: {},
 
   // tts config
   edgeTTSVoiceName: "zh-CN-YunxiNeural",
@@ -129,6 +130,10 @@ export const useAccessStore = createPersistStore(
   { ...DEFAULT_ACCESS_STATE },
 
   (set, get) => ({
+    getDefaultPlugins() {
+        return get().defaultPlugins;
+    },
+
     enabledAccessControl() {
       this.fetch();
 

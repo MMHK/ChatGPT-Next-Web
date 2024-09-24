@@ -2,7 +2,7 @@
 
 require("../polyfill");
 
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 
 import styles from "./home.module.scss";
 
@@ -28,7 +28,7 @@ import { useAppConfig } from "../store/config";
 import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
 import { type ClientApi, getClientApi } from "../client/api";
-import { useAccessStore } from "../store";
+import {createEmptyPlugin, FunctionToolService, useAccessStore, usePluginStore, Plugin} from "../store";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -225,10 +225,47 @@ export function Home() {
   useLoadData();
   useHtmlLang();
 
+
+  const accessStore = useAccessStore();
+  const pluginStore = usePluginStore();
+  const [createdPlugin, setCreatedPlugin] = useState<boolean>(false);
+
   useEffect(() => {
     console.log("[Config] got config from build time", getClientConfig());
     useAccessStore.getState().fetch();
-  }, []);
+
+    const plugins = accessStore.getDefaultPlugins();
+    if (plugins && !createdPlugin) {
+      Object.entries(plugins).forEach(([id, pluginContent]) => {
+        const plugin = {
+          ...createEmptyPlugin(),
+          id: id,
+          content: pluginContent,
+        } as Plugin;
+        const tool = FunctionToolService.add(plugin, true);
+        const version = tool.api.definition.info.version;
+        const title = tool.api.definition.info.title;
+
+        const existPlugins = pluginStore.getAll();
+
+        const existPlugin = Array.from(existPlugins).find((row) => {
+          return row.title == title && row.version == version;
+        })
+
+        if (!existPlugin) {
+          pluginStore.create({
+            ...plugin,
+            builtin: true,
+            usingProxy: true,
+            title,
+            version,
+          });
+        }
+      })
+      setCreatedPlugin(true);
+    }
+
+  }, [createdPlugin]);
 
   if (!useHasHydrated()) {
     return <Loading />;

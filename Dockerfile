@@ -18,6 +18,7 @@ RUN apk update && apk add --no-cache git
 ENV OPENAI_API_KEY=""
 ENV GOOGLE_API_KEY=""
 ENV CODE=""
+ENV GA_ID="XXX"
 
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -34,6 +35,7 @@ ENV PROXY_URL=""
 ENV OPENAI_API_KEY=""
 ENV GOOGLE_API_KEY=""
 ENV CODE=""
+ENV GA_ID="XXX"
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
