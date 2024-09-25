@@ -12,7 +12,7 @@ import LoadingIcon from "../icons/three-dots.svg";
 import { getCSSVar, useMobileScreen } from "../utils";
 
 import dynamic from "next/dynamic";
-import { Path, SlotID } from "../constant";
+import { Path, SlotID, ServiceProvider } from "../constant";
 import { ErrorBoundary } from "./error";
 
 import { getISOLang, getLang } from "../locales";
@@ -226,44 +226,75 @@ export function Home() {
   useHtmlLang();
 
 
+  const config = useAppConfig();
+  const updateConfig = config.update;
   const accessStore = useAccessStore();
   const pluginStore = usePluginStore();
   const [createdPlugin, setCreatedPlugin] = useState<boolean>(false);
 
   useEffect(() => {
     console.log("[Config] got config from build time", getClientConfig());
-    useAccessStore.getState().fetch();
+    useAccessStore.getState().fetch().finally(() => {
+      const plugins = accessStore.getDefaultPlugins();
+      let defaultModel = accessStore.defaultModel || "";
 
-    const plugins = accessStore.getDefaultPlugins();
-    if (plugins && !createdPlugin) {
-      Object.entries(plugins).forEach(([id, pluginContent]) => {
-        const plugin = {
-          ...createEmptyPlugin(),
-          id: id,
-          content: pluginContent,
-        } as Plugin;
-        const tool = FunctionToolService.add(plugin, true);
-        const version = tool.api.definition.info.version;
-        const title = tool.api.definition.info.title;
+      // console.log(defaultModel);
 
-        const existPlugins = pluginStore.getAll();
+      if (defaultModel && !createdPlugin) {
+        let defaultModelProvider;
 
-        const existPlugin = Array.from(existPlugins).find((row) => {
-          return row.title == title && row.version == version;
+        if (`${defaultModel}`.includes("@")) {
+          [defaultModel, defaultModelProvider] = `${defaultModel}`.split("@", 2);
+        }
+        if (defaultModelProvider) {
+          defaultModelProvider = defaultModelProvider as ServiceProvider;
+        } else {
+          defaultModelProvider = config.modelConfig.providerName;
+        }
+        const modelConfig = {
+          ...config.modelConfig,
+          model: defaultModel || config.modelConfig.model,
+          providerName: defaultModelProvider,
+          compressModel: defaultModel || config.modelConfig.compressModel,
+          compressProviderName: defaultModelProvider,
+        };
+        updateConfig((config) => {
+          config.modelConfig = modelConfig
+        });
+        // console.log(config.modelConfig, modelConfig);
+      }
+
+      if (plugins && !createdPlugin) {
+        Object.entries(plugins).forEach(([id, pluginContent]) => {
+          const plugin = {
+            ...createEmptyPlugin(),
+            id: id,
+            content: pluginContent,
+          } as Plugin;
+          const tool = FunctionToolService.add(plugin, true);
+          const version = tool.api.definition.info.version;
+          const title = tool.api.definition.info.title;
+
+          const existPlugins = pluginStore.getAll();
+
+          const existPlugin = Array.from(existPlugins).find((row) => {
+            return row.title == title && row.version == version;
+          })
+
+          if (!existPlugin) {
+            pluginStore.create({
+              ...plugin,
+              builtin: true,
+              usingProxy: true,
+              title,
+              version,
+            });
+          }
         })
 
-        if (!existPlugin) {
-          pluginStore.create({
-            ...plugin,
-            builtin: true,
-            usingProxy: true,
-            title,
-            version,
-          });
-        }
-      })
-      setCreatedPlugin(true);
-    }
+        setCreatedPlugin(true);
+      }
+    });
 
   }, [createdPlugin]);
 

@@ -22,6 +22,7 @@ declare global {
 }
 
 async function handle() {
+  // console.log(process.env);
   return NextResponse.json(DANGER_CONFIG);
 }
 

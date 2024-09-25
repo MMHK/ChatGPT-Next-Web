@@ -205,9 +205,9 @@ export const useAccessStore = createPersistStore(
       );
     },
     fetch() {
-      if (fetchState > 0 || getClientConfig()?.buildMode === "export") return;
+      if (fetchState > 0 || getClientConfig()?.buildMode === "export") return Promise.resolve();
       fetchState = 1;
-      fetch("/api/config", {
+      return fetch("/api/config", {
         method: "post",
         body: null,
         headers: {

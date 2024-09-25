@@ -45,6 +45,7 @@ typings
 
 # Yarn Integrity file
 .yarn-integrity
+.yarn
 
 # dotenv environment variable files
 .env
@@ -82,6 +83,7 @@ tmp
 temp
 
 # IDE and editor directories
+.github
 .idea
 .vscode
 *.swp
@@ -95,3 +97,8 @@ Thumbs.db
 # secret key
 *.key
 *.key.pub
+
+docker-compose.yml
+*.md
+*.template
+
