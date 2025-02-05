@@ -921,7 +921,7 @@ export const useChatStore = createPersistStore(
         newState.sessions.forEach((s) => {
           const config = useAppConfig.getState();
           s.mask.modelConfig.compressModel = "";
-          s.mask.modelConfig.compressProviderName = "";
+          s.mask.modelConfig.compressProviderName = "" as ServiceProvider;
         });
       }
 

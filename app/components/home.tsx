@@ -314,7 +314,6 @@ export function Home() {
             pluginStore.create({
               ...plugin,
               builtin: true,
-              usingProxy: true,
               title,
               version,
             });
