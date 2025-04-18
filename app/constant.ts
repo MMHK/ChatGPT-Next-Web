@@ -499,6 +499,11 @@ const openaiModels = [
   "o1-mini",
   "o1-preview",
   "o3-mini",
+  "o4-mini",
+  "gpt-4.1",
+  "gpt-4.1-mini",
+  "gpt-4.1-nano",
+  "gpt-4.5-preview",
 ];
 
 const googleModels = [
@@ -525,6 +530,7 @@ const googleModels = [
   "gemini-2.0-flash-thinking-exp-01-21",
   "gemini-2.0-pro-exp",
   "gemini-2.0-pro-exp-02-05",
+  "gemini-2.5-pro-preview-03-25",
 ];
 
 const anthropicModels = [
