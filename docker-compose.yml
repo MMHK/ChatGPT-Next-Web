@@ -1,5 +1,14 @@
-version: "3.9"
+version: "3.8"
 services:
+  build-app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      platforms:
+        - "linux/amd64"
+#        - "linux/arm64"
+    image: mmhk/chatgpt-next-web:latest
+
   chatgpt-next-web:
     profiles: [ "no-proxy" ]
     container_name: chatgpt-next-web

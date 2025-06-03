@@ -337,6 +337,7 @@ export function showPlugins(provider: ServiceProvider, model: string) {
     provider == ServiceProvider.OpenAI ||
     provider == ServiceProvider.Azure ||
     provider == ServiceProvider.Moonshot ||
+    provider == ServiceProvider.OpenRouter ||
     provider == ServiceProvider.ChatGLM
   ) {
     return true;

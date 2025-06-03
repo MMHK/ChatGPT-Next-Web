@@ -117,6 +117,7 @@ export const EXPORT_MESSAGE_CLASS_NAME = "export-markdown";
 export enum ServiceProvider {
   OpenAI = "OpenAI",
   Azure = "Azure",
+  OpenRouter = "OpenRouter",
   Google = "Google",
   Anthropic = "Anthropic",
   Baidu = "Baidu",
@@ -521,6 +522,9 @@ const openaiModels = [
   "gpt-4.1-mini",
   "gpt-4.1-nano",
   "gpt-4.5-preview",
+  "anthropic/claude-3.5-sonnet",
+  "anthropic/claude-3.7-sonnet",
+  "anthropic/claude-sonnet-4",
 ];
 
 const googleModels = [
@@ -695,6 +699,17 @@ export const DEFAULT_MODELS = [
       providerName: "Azure",
       providerType: "azure",
       sorted: 2,
+    },
+  })),
+  ...openaiModels.map((name) => ({
+    name,
+    available: true,
+    sorted: seq++,
+    provider: {
+      id: "openrouter",
+      providerName: "OpenRouter",
+      providerType: "openai",
+      sorted: 3,
     },
   })),
   ...googleModels.map((name) => ({
